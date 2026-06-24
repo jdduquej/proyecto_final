@@ -151,15 +151,36 @@ if st.button("🔍 Calcular riesgo de bajo peso"):
 
     if response.status_code == 200:
         prediction = response.json()
-        prob = prediction["data"][0]["predictionProbability"]
+        result = prediction["data"][0]
 
         st.markdown("<div class='result-card'>", unsafe_allow_html=True)
         st.subheader("Resultado de la predicción")
 
-        if prob >= 0.5:
-            st.error(f"⚠️ Riesgo ALTO de bajo peso al nacer: **{prob:.2f}**")
+        # ================================
+        # MANEJO UNIVERSAL DE MODELOS
+        # ================================
+
+        # Caso 1: Clasificación binaria
+        if "predictionProbability" in result:
+            prob = result["predictionProbability"]
+            if prob >= 0.5:
+                st.error(f"⚠️ Riesgo ALTO de bajo peso al nacer: **{prob:.2f}**")
+            else:
+                st.success(f"🟢 Riesgo BAJO de bajo peso al nacer: **{prob:.2f}**")
+
+        # Caso 2: Clasificación multiclase
+        elif "classProbabilities" in result:
+            st.info(f"Clase predicha: **{result['prediction']}**")
+            st.json(result["classProbabilities"])
+
+        # Caso 3: Regresión
+        elif "prediction" in result:
+            st.success(f"Valor predicho: **{result['prediction']}**")
+
+        # Caso 4: Respuesta inesperada
         else:
-            st.success(f"🟢 Riesgo BAJO de bajo peso al nacer: **{prob:.2f}**")
+            st.error("Formato de respuesta desconocido.")
+            st.json(result)
 
         st.markdown("</div>", unsafe_allow_html=True)
 
