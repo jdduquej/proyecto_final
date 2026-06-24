@@ -88,20 +88,18 @@ with col2:
 if st.button("🔍 Calcular riesgo de bajo peso"):
     
     # Construcción del payload EXACTO con tus features
-    payload = {
-        "data": [
-            {
-                "edad_madre": edad_madre,
-                "tiempo_de_gestacion": tiempo_de_gestacion,
-                "numero_consultas_prenatales": numero_consultas_prenatales,
-                "nivel_educativo_madre": nivel_educativo_madre,
-                "sexo": sexo,
-                "tipo_parto": tipo_parto,
-                "pertenencia_etnica": pertenencia_etnica,
-                "regimen_seguridad": regimen_seguridad
-            }
-        ]
+payload = [
+    {
+        "edad_madre": edad_madre,
+        "tiempo_de_gestacion": tiempo_de_gestacion,
+        "numero_consultas_prenatales": numero_consultas_prenatales,
+        "nivel_educativo_madre": nivel_educativo_madre,
+        "sexo": sexo,
+        "tipo_parto": tipo_parto,
+        "pertenencia_etnica": pertenencia_etnica,
+        "regimen_seguridad": regimen_seguridad
     }
+]
 
     headers = {
         "Authorization": f"Token {DR_API_KEY}",
