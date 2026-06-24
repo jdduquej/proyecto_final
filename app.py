@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import json
+from datetime import datetime
 
 # ================================
 # CONFIGURACIÓN DE LA APLICACIÓN
@@ -62,7 +63,7 @@ st.sidebar.title("⚙️ Configuración del Modelo")
 st.sidebar.info("Este modelo utiliza DataRobot Deployment API para generar predicciones en tiempo real.")
 
 # ================================
-# FORMULARIO DE ENTRADA
+# FORMULARIO DE ENTRADA (solo variables importantes)
 # ================================
 st.header("📝 Ingrese los datos del nacimiento")
 
@@ -90,13 +91,43 @@ with col2:
     )
 
 # ================================
+# VALORES POR DEFECTO PARA COLUMNAS OCULTAS
+# ================================
+default_values = {
+    "ano": 2023,
+    "apgar1": 8,
+    "apgar2": 9,
+    "area_residencia": "Urbana",
+    "departamento_residencia": "Antioquia",
+    "edad_padre": 30,
+    "estado_conyugal_madre": "Soltera",
+    "factor_rh": "+",
+    "fecha_nacimiento": datetime.now().strftime("%Y-%m-%d"),
+    "grupo_edad_madre": "20_34",
+    "grupo_sanguineo": "O",
+    "localidad": "Medellín",
+    "multiplicidad_embarazo": "Único",
+    "municipio_residencia": "Medellín",
+    "nivel_educativo_padre": "Secundaria",
+    "nombre_administradora": "SURA",
+    "numero_embarazos": 1,
+    "numero_hijos_nacidos_vivos": 0,
+    "parto_atendido_por": "Médico",
+    "periodo_de_reporte": 1,
+    "prematuro": 0,
+    "talla_centimetros": 50,
+    "ultimo_ano_aprobado_madre": "11"
+}
+
+# ================================
 # BOTÓN DE PREDICCIÓN
 # ================================
 if st.button("🔍 Calcular riesgo de bajo peso"):
 
-    # Payload EXACTO requerido por DataRobot (array JSON)
+    # Construcción del payload completo
     payload = [
         {
+            # Variables ingresadas por el usuario
             "edad_madre": edad_madre,
             "tiempo_de_gestacion": tiempo_de_gestacion,
             "numero_consultas_prenatales": numero_consultas_prenatales,
@@ -104,7 +135,9 @@ if st.button("🔍 Calcular riesgo de bajo peso"):
             "sexo": sexo,
             "tipo_parto": tipo_parto,
             "pertenencia_etnica": pertenencia_etnica,
-            "regimen_seguridad": regimen_seguridad
+            "regimen_seguridad": regimen_seguridad,
+            # Variables ocultas con valores por defecto
+            **default_values
         }
     ]
 
@@ -118,8 +151,6 @@ if st.button("🔍 Calcular riesgo de bajo peso"):
 
     if response.status_code == 200:
         prediction = response.json()
-
-        # DataRobot devuelve: data → [ { prediction, predictionProbability } ]
         prob = prediction["data"][0]["predictionProbability"]
 
         st.markdown("<div class='result-card'>", unsafe_allow_html=True)
